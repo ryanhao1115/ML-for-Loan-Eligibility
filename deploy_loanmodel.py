@@ -37,15 +37,26 @@ def predict():
            #x=json.loads(json_)
            #df=pd.DataFrame(x)
            print(df)
-           y_pred = model.predict(df)
-           if y_pred == 1:
-                result = 'Approved'
-           else: 
-                result = 'Rejected'
+           #y_pred = model.predict(df)
+           y_prob = model.predict_proba(df)
+          
+           y_pred = np.zeros(len(y_test))
+           for i in range(len(y_test)):
+                if y_prob[i][1] > 0.6:
+                    y_pred[i] = 1
+                else:
+                    y_pred[i] = 0
+            
+
+           
+           #if y_pred == 1:
+           #     result = 'Approved'
+           #else: 
+           #     result = 'Rejected'
                 
 
            return jsonify({
-               "prediction":result
+               "prediction":str(y_pred)
            })
 
        except:
@@ -70,7 +81,15 @@ def submit():
             return "You submited wrong key words!"
     print('***********--------------')
     print(df_t)
-    y_pred = model.predict(df_t)
+    #y_pred = model.predict(df_t)
+    y_prob = model.predict_proba(df_t)
+    print(y_prob)
+            
+
+    if y_prob[0][1] > 0.6:
+        y_pred = 1
+    else:
+        y_pred = 0
     if y_pred == 1:
         return "<h1> Congratulations, your loan has been approved! </h1>"
     else:
